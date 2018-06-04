@@ -441,7 +441,7 @@ var replaceKeysInObj = function (obj, key, newKey) {
 // Example:  0, 1, 1, 2, 3, 5, 8, 13, 21, 34.....
 // fibonacci(5);  // [0, 1, 1, 2, 3, 5]
 // Note:  The 0 is not counted.
-var fibonacci = function (n, ) {
+var fibonacci = function (n ) {
   
   if (n ===0 || n <0){
     return null;
@@ -452,7 +452,6 @@ var fibonacci = function (n, ) {
   }
   
   let fibbArr = fibonacci(n-1);
-
   fibbArr.push(fibbArr[fibbArr.length-1] + fibbArr[fibbArr.length-2]);
 
   return fibbArr;
@@ -516,7 +515,24 @@ var capitalizeFirst = function (array, counter = 0) {
 //   e: {e: {e: 2}, ee: 'car'}
 // };
 // nestedEvenSum(obj1); // 10
-var nestedEvenSum = function (obj) {};
+var nestedEvenSum = function (obj) {
+  let sum = 0;
+  for (var key in obj){
+    //IF THE CURRENT KEY-VALUE CONTAINS AN OBJECT ITERATE OVER THAT OBJECT RECURSIVELY
+    //UPDATING THE SUM EACH TIME CALLED
+    if (typeof obj[key] === 'object'){
+      sum += nestedEvenSum(obj[key]);
+    }
+    //IF THE KEY CONTAINS A NUMBER, CHECK TO SEE IF IT'S EVEN AND IF SO ADD TO THE SUM
+    if (typeof obj[key] === 'number'){
+      if (isEven(obj[key] )){
+        sum += obj[key];
+      }
+    }
+    
+  }
+  return sum;
+};
 
 // 29. Flatten an array containing nested arrays.
 // Example: flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
