@@ -42,27 +42,15 @@ var arraySum = function (array) {
   //alert(array);
   //if the array has a length of 1, check to see if that array element is
   //a nested array. If it isn't return array[0](first value)
-  if (array.length === 1 && !Array.isArray(array[0])) {
-    return array[0];
-  }
-  //if the array has no length return 0
-  else if (array.length === 0) {
-    return 0;
-  }
-  //if the array length is greater than one execute the following code:
-
-  if (!Array.isArray(array[0])) {
-    // console.log(array[0] + " not an array")
-
-    return array[0] + arraySum(array.slice(1));
-  } else {
-    // if the first element is an array sum it then add to arraySum(array.slice(1))
-    let arrayOne = arraySum(array[0]);
-    // alert(arrayOne);
-    // console.log(array[0] + " an array")
-    return arraySum(array.slice(1)); + arraySum(arrayOne);
-    // return sum(array[0]) + arraySum(array.slice(1));
-  }
+  let sum = 0;
+  array.forEach(function (element) {
+    if (Array.isArray(element)) {
+      sum += arraySum(element);
+    } else {
+      sum += element;
+    }
+  })
+  return sum;
 
 };
 
@@ -237,20 +225,38 @@ var multiply = function (x, y) {
 // JavaScript's Math object.
 //TODO: fix this !!!
 var divide = function (x, y) {
-  if (y === 0) {
-    return 0;
-  } else if (x - y === 0) {
-    return 1;
-  } else if (x < y) {
 
-  } else if (x < 0) {
-    return (1 + -divide(-x - y, y));
-  } else if (y < 0) {
-    return (1 + -divide(x - y, -y));
-  } else {
+  if (y === 0) {
+    return NaN;
+  }
+  if (y === 1) {
+    return x;
+  }
+  if (x === y) {
+    return 1;
+  }
+  if (x < 0) {
+    x = -x;
+  }
+  if (y < 0) {
+    y = -y;
+  }
+  if (x < y) {
+    return 0;
+  }
+  if (x > 0) {
     return (1 + divide(x - y, y));
   }
+
+  return (1 - divide(x - y, y));
+
+
+
+
+
 };
+
+
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers.  The GCD of two
 // integers is the greatest integer that divides both x and y with no remainder.
@@ -258,22 +264,29 @@ var divide = function (x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function (x, y, divisor) {
+
+  //CHeck to see if divisor present and if not assign
   if (!divisor) {
+    if (x === y) {
+      return x;
+    }
     if (x > y) {
       divisor = x;
     } else {
       divisor = y;
     }
   }
-  if (x === y) {
-    return x;
-  }
+
+
   if (x < 0 || y < 0) {
     return null;
   }
-  if ((x % divisor) === 0 && (y % divisor === 0)) {
+
+  //base case below
+  if ((x % divisor === 0) && (y % divisor === 0)) {
     return divisor
   } else {
+    //recursive call
     return gcd(x, y, divisor - 1)
   }
 };
@@ -441,18 +454,18 @@ var replaceKeysInObj = function (obj, key, newKey) {
 // Example:  0, 1, 1, 2, 3, 5, 8, 13, 21, 34.....
 // fibonacci(5);  // [0, 1, 1, 2, 3, 5]
 // Note:  The 0 is not counted.
-var fibonacci = function (n ) {
-  
-  if (n ===0 || n <0){
+var fibonacci = function (n) {
+
+  if (n === 0 || n < 0) {
     return null;
   }
-  
-  if ( n === 1 ){
-    return [0,1];
+
+  if (n === 1) {
+    return [0, 1];
   }
-  
-  let fibbArr = fibonacci(n-1);
-  fibbArr.push(fibbArr[fibbArr.length-1] + fibbArr[fibbArr.length-2]);
+
+  let fibbArr = fibonacci(n - 1);
+  fibbArr.push(fibbArr[fibbArr.length - 1] + fibbArr[fibbArr.length - 2]);
 
   return fibbArr;
 }
@@ -517,26 +530,39 @@ var capitalizeFirst = function (array, counter = 0) {
 // nestedEvenSum(obj1); // 10
 var nestedEvenSum = function (obj) {
   let sum = 0;
-  for (var key in obj){
+  for (var key in obj) {
     //IF THE CURRENT KEY-VALUE CONTAINS AN OBJECT ITERATE OVER THAT OBJECT RECURSIVELY
     //UPDATING THE SUM EACH TIME CALLED
-    if (typeof obj[key] === 'object'){
+    if (typeof obj[key] === 'object') {
       sum += nestedEvenSum(obj[key]);
     }
     //IF THE KEY CONTAINS A NUMBER, CHECK TO SEE IF IT'S EVEN AND IF SO ADD TO THE SUM
-    if (typeof obj[key] === 'number'){
-      if (isEven(obj[key] )){
+    if (typeof obj[key] === 'number') {
+      if (isEven(obj[key])) {
         sum += obj[key];
       }
     }
-    
+
   }
   return sum;
 };
 
 // 29. Flatten an array containing nested arrays.
 // Example: flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
-var flatten = function (arrays) {};
+
+var flatten = function (arrays) {
+
+
+  return Array.isArray(arrays) ? [].concat.apply([], arrays.map(flatten)) : arrays;
+
+
+};
+
+// flatten([1, [2],
+//   [3, [
+//     [4]
+//   ]], 5
+// ]);
 
 // 30. Given a string, return an object containing tallies of each letter.
 // letterTally('potato'); // {'p':1, 'o':2, 't':2, 'a':1}
@@ -582,17 +608,10 @@ var compress = function (list, compressedList = [], count = 0) {
     return compressedList;
   } else {
     if (list[count] !== list[count + 1]) {
-
       compressedList.push(list[count]);
-      //  return compress(list, compressedList, count + 1);
-    } else {
-
-      // return compress(list, compressedList, count + 1);
     }
     return compress(list, compressedList, count + 1);
   }
-
-
 };
 
 
@@ -600,7 +619,17 @@ var compress = function (list, compressedList = [], count = 0) {
 // 32. Augument every element in a list with a new value where each element is an array
 // itself.
 // Example: augmentElements([[],[3],[7]], 5); // [[5],[3,5],[7,5]]
-var augmentElements = function (array, aug) {};
+var augmentElements = function (array, aug) {
+  // let augArray = [];
+  //  if (array[0].length = 0){
+  //    augArray[0] = aug;
+  //  } else (
+  //    array[0].map()
+  //  )
+  //  augmentElements(array.slice(1));
+
+
+};
 
 // 33. Reduce a series of zeroes to a single 0.
 // minimizeZeroes([2,0,0,0,1,4]) // [2,0,1,4]
@@ -703,15 +732,96 @@ numToText("I have 5 dogs and 6 ponies");
 // *** EXTRA CREDIT ***
 
 // 36. Return the number of times a tag occurs in the DOM.
-var tagCount = function (tag, node) {};
+var tagCount = function (tag, node) {
+  //var nodelist = document.getElementsByTagName("P").length;
+  var currentNode;
+  let ni = document.createNodeIterator(document.documentElement, NodeFilter.SHOW_ELEMENT);
+
+  while (currentNode = ni.nextNode()) {
+    // console.log(currentNode.nodeName);
+  }
+};
 
 // 37. Write a function for binary search.
 // Sample array:  [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 // console.log(binarySearch(5)) will return '5'
 
-var binarySearch = function (array, target, min, max) {};
+var binarySearch = function (array, target, min, max) {
+  console.log(arguments);
+  //array = array.sort();
+
+  min = min || 0;
+  max = max || array.length - 1;
+  let middle = Math.floor((min + max) / 2);
+
+  console.log(middle);
+
+  if (array[middle] === target) {
+    return middle;
+  }
+
+  if (array[middle] !== target && max < min) {
+    return null;
+
+  }
+
+
+
+
+  if (array[middle] > target) {
+    return binarySearch(array, target, min, middle - 1);
+  }
+  if (array[middle] < target) {
+    return binarySearch(array, target, middle + 1, max);
+  }
+
+
+};
 
 // 38. Write a merge sort function.
 // Sample array:  [34,7,23,32,5,62]
 // Sample output: [5,7,23,32,34,62]
-var mergeSort = function (array) {};
+var mergeSort = function (array) {
+
+  //Base case?
+  if (array.length === 1) {
+    return array;
+  }
+
+  if (array.length === 2 && Array.isArray(array[0]) && Array.isArray(array[1])) {
+    let mergedArray = [];
+
+
+  }
+  const middle = Math.floor(array.length / 2) //gets the middle number
+  const left = array.slice(0, middle); //left items
+  const right = array.slice(middle); //right hand side
+
+  return merge(
+    mergeSort(left), mergeSort(right)
+  );
+}
+
+function merge(left, right) {
+  let mergedArray = []
+  let leftI = 0;
+  let rightI = 0;
+
+  while (leftI < left.length && rightI < right.length) {
+    let leftArr = left[leftI];
+    let rightArr = right[rightI]
+    if (leftArr < rightArr) {
+      mergedArray.push(leftArr);
+      leftI++;
+    } else {
+      mergedArray.push(rightArr);
+      rightI++;
+    }
+  }
+
+
+  //return mergedArray;
+  return mergedArray.concat(left.slice(leftI)).concat(right.slice(rightI));
+
+
+};
