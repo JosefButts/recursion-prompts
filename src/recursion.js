@@ -621,6 +621,7 @@ var compress = function (list, compressedList = [], count = 0) {
 // Example: augmentElements([[],[3],[7]], 5); // [[5],[3,5],[7,5]]
 var augmentElements = function (array, aug) {
   // let augArray = [];
+  
   //  if (array[0].length = 0){
   //    augArray[0] = aug;
   //  } else (
@@ -733,13 +734,21 @@ numToText("I have 5 dogs and 6 ponies");
 
 // 36. Return the number of times a tag occurs in the DOM.
 var tagCount = function (tag, node) {
-  //var nodelist = document.getElementsByTagName("P").length;
-  var currentNode;
-  let ni = document.createNodeIterator(document.documentElement, NodeFilter.SHOW_ELEMENT);
 
-  while (currentNode = ni.nextNode()) {
-    // console.log(currentNode.nodeName);
+  let count = 0;
+  let node = node || document.body;
+
+  var list = node.getElementsByTagName(tag);
+
+  for (let i = 0; i < list.length; i++) {
+    if (list[i] === tag){
+      count++;
+    }
+    if (list.children){
+      count = count + tagCount(tag, list[i]);
+    }
   }
+
 };
 
 // 37. Write a function for binary search.
@@ -752,7 +761,7 @@ var binarySearch = function (array, target, min, max) {
 
   min = min || 0;
   max = max || array.length - 1;
-  let middle = Math.floor((min + max) / 2);
+  let middle = Math.floor((min + max) / 2) || 0;
 
   console.log(middle);
 
@@ -765,18 +774,19 @@ var binarySearch = function (array, target, min, max) {
 
   }
 
-
-
-
-  if (array[middle] > target) {
-    return binarySearch(array, target, min, middle - 1);
-  }
   if (array[middle] < target) {
     return binarySearch(array, target, middle + 1, max);
   }
 
+  if (array[middle] > target) {
+    return binarySearch(array, target, min, middle - 1);
+  }
+
+
 
 };
+
+
 
 // 38. Write a merge sort function.
 // Sample array:  [34,7,23,32,5,62]
